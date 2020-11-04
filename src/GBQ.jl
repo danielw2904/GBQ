@@ -64,8 +64,12 @@ end
 # Execute a query
 #
 # Returns a dataframe
-function gbq_query(query; use_legacy_sql=false, quiet=true, max_rows=100000000)
-  response = JSON.parse(read(`bq --format=json  --quiet="$quiet" query --use_legacy_sql="$use_legacy_sql" --max_rows="$max_rows" "$query"`, String))
+function gbq_query(query;project = nothing, use_legacy_sql=false, quiet=true, max_rows=100000000)
+  if !isnothing(project)
+    response = JSON.parse(read(`bq --format=json --project_id="$project"  --quiet="$quiet" query --use_legacy_sql="$use_legacy_sql" --max_rows="$max_rows" "$query"`, String))
+  else
+    response = JSON.parse(read(`bq --format=json  --quiet="$quiet" query --use_legacy_sql="$use_legacy_sql" --max_rows="$max_rows" "$query"`, String))
+  end
   return _gbq_parse(response)
 end
 
